@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="AnchorPane" prefHeight="858.0" prefWidth="1343.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gameserver.FXMLDocumentController">
+   <children>
+      <Text layoutX="18.0" layoutY="313.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Analysis for online players" textAlignment="CENTER" wrappingWidth="1307.23828125" AnchorPane.bottomAnchor="526.9296875" AnchorPane.leftAnchor="18.0">
+         <font>
+            <Font size="72.0" />
+         </font>
+      </Text>
+      <BarChart fx:id="charthBar" categoryGap="2.0" layoutX="237.0" layoutY="363.0" maxHeight="1.7976931348623157E308" prefHeight="459.0" prefWidth="870.0">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis label="number of player" side="LEFT" />
+        </yAxis>
+      </BarChart>
+      <ToggleButton fx:id="btnStartStop" layoutX="508.0" layoutY="92.0" mnemonicParsing="false" prefHeight="96.0" prefWidth="304.0" style="-fx-background-color: GREEn; -fx-background-radius: 50; -fx-font-size: 70; -fx-text-fill: BLUE; -fx-font-weight: Bold;" text="Run" />
+   </children>
+</AnchorPane>
