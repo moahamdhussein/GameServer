@@ -1,5 +1,8 @@
 package gameserver;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -18,19 +21,20 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
-public  class GameServerBase extends AnchorPane {
+public class GameServerBase extends AnchorPane {
 
     protected final Text text;
     protected final CategoryAxis categoryAxis;
     protected final NumberAxis numberAxis;
     protected final BarChart charthBar;
     protected final ToggleButton btnStartStop;
+    ServerSocket serversocket;
 
-    public GameServerBase() {
+    public GameServerBase() throws IOException {
 
         text = new Text();
         categoryAxis = new CategoryAxis();
-        numberAxis = new NumberAxis(0,20,1);
+        numberAxis = new NumberAxis(0, 20, 1);
         charthBar = new BarChart(categoryAxis, numberAxis);
         btnStartStop = new ToggleButton();
 
@@ -52,27 +56,22 @@ public  class GameServerBase extends AnchorPane {
 
         numberAxis.setLabel("number of player");
         numberAxis.setSide(javafx.geometry.Side.LEFT);
-        
+
         charthBar.setCategoryGap(2.0);
         charthBar.setLayoutX(237.0);
         charthBar.setLayoutY(363.0);
         charthBar.setMaxHeight(Double.MAX_VALUE);
         charthBar.setPrefHeight(459.0);
         charthBar.setPrefWidth(870.0);
-       
-        
+
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.getData().add(new XYChart.Data<>("Online", 9));
         series.getData().add(new XYChart.Data<>("Offline", 5));
-        
-        
+
         charthBar.getData().add(series);
         series.getData().get(0).getNode().setStyle("-fx-bar-fill:GREEN");
         series.getData().get(1).getNode().setStyle("-fx-bar-fill:RED");
-       
-        
-        
-        
+
         btnStartStop.setLayoutX(508.0);
         btnStartStop.setLayoutY(92.0);
         btnStartStop.setMnemonicParsing(false);
@@ -83,21 +82,22 @@ public  class GameServerBase extends AnchorPane {
         btnStartStop.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                 if (btnStartStop.isSelected() == true) {
-                        btnStartStop.setStyle("-fx-background-color: GREEN; -fx-background-radius: 50; -fx-font-size: 70; -fx-font-weight: Bold;-fx-text-fill: White");
-                        System.out.println("Server Started");
-                        btnStartStop.setText("Start");
-                 }else{
-                        btnStartStop.setStyle("-fx-background-color: RED; -fx-background-radius: 50; -fx-font-size: 70; -fx-font-weight: Bold;-fx-text-fill: White");
-                       System.out.println("Server Stoped");
-                       btnStartStop.setText("Stop");
-                 }
+                if (btnStartStop.isSelected() == true) {
+                    btnStartStop.setStyle("-fx-background-color: GREEN; -fx-background-radius: 50; -fx-font-size: 70; -fx-font-weight: Bold;-fx-text-fill: White");
+                    System.out.println("Server Started");
+                    btnStartStop.setText("Start");
+                } else {
+                    btnStartStop.setStyle("-fx-background-color: RED; -fx-background-radius: 50; -fx-font-size: 70; -fx-font-weight: Bold;-fx-text-fill: White");
+                    System.out.println("Server Stoped");
+                    btnStartStop.setText("Stop");
+                }
             }
         });
-        
+
         getChildren().add(text);
         getChildren().add(charthBar);
         getChildren().add(btnStartStop);
 
+        
     }
 }
