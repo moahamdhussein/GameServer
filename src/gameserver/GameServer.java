@@ -1,21 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gameserver;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class GameServer extends Application {
+
     static ServerSocket serversocket;
+
+    public GameServer() {
+        initializeServerSocket();
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
 
@@ -28,14 +28,25 @@ public class GameServer extends Application {
 
     public static void main(String[] args) throws IOException {
         launch(args);
-        serversocket = new ServerSocket(5000);
-        while (true) {
-            Socket socket = serversocket.accept();
-            if (socket.isConnected()) {
-                System.out.println(socket.getLocalPort());
-                new GameHandler(socket);
+
+    }
+
+    private void initializeServerSocket() {
+        new Thread(() -> {
+            try {
+                serversocket = new ServerSocket(5000);
+
+                while (true) {
+                    Socket socket = serversocket.accept();
+                    if (socket.isConnected()) {
+                        System.out.println("Client #" + (GameHandler.clients.size() + 1) + " has Connected...");
+                    }
+                    new GameHandler(socket);
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
-        }
+        }).start();
     }
 
 }
