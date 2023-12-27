@@ -10,22 +10,26 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.BarChart;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 
-/**
- *
- * @author mohamed
- */
+
 public class FXMLDocumentController implements Initializable {
     
-    @FXML
     private Label label;
+    @FXML
+    private BarChart<?, ?> charthBar;
+    @FXML
+    private ToggleButton btnStartStop;
     
     @FXML
-    private void handleButtonAction(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         System.out.println("You clicked me!");
-        label.setText("Hello World!");
+        
     }
+    
+    
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {

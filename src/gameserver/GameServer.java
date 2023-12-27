@@ -18,9 +18,8 @@ public class GameServer extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-
-        Parent root = new GameServerBase();
-        Scene scene = new Scene(root, 1343, 858);
+        Parent root =new GameServerBase();
+        Scene scene = new Scene(root,1343,858);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
