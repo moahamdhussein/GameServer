@@ -3,14 +3,10 @@ package DataBase;
 import java.sql.PreparedStatement; 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import request.LoginRequest;
 import request.RegisterRequest;
 import response.LoggedInUser;
-import response.NetworkResponse;
+
 
 public class DataBaseDao implements UserDao {
 
@@ -22,11 +18,10 @@ public class DataBaseDao implements UserDao {
     }
 
     @Override
-    public void getUserData(int id, DaoCallback<ResultSet> callback) {
+    public void getUserData(DaoCallback<ResultSet> callback) {
         try {
-            String query = "select * from player where id = ?";
+            String query = "select * from player";
             PreparedStatement pst = db.con.prepareStatement(query);
-            pst.setInt(1, id);
             callback.onSuccess(pst.executeQuery());
             pst.close();
         } catch (SQLException ex) {
@@ -36,14 +31,17 @@ public class DataBaseDao implements UserDao {
     }
 
     @Override
-    public void rgisterUser(RegisterRequest rr, DaoCallback<Integer> callback) {
+    public void registerUser(RegisterRequest rr, DaoCallback<LoggedInUser> callback) {
         try {
             String query = "Insert into player (email,usename,password) Value(?,?,?)";
             PreparedStatement pst = db.con.prepareStatement(query);
             pst.setString(1, rr.getEmail());
             pst.setString(2, rr.getUserName());
             pst.setString(3, rr.getPassword());
-            callback.onSuccess(pst.executeUpdate());
+            int executeUpdate = pst.executeUpdate();
+            if(executeUpdate > 0){
+              callback.onSuccess(convertFromRegisterRequestToLoggedInUser(rr));
+            }
             pst.close();
         } catch (SQLException ex) {
             System.out.println("User already in defined please LogIn");
@@ -115,5 +113,14 @@ public class DataBaseDao implements UserDao {
         }
     }
     
-
+    private LoggedInUser convertFromRegisterRequestToLoggedInUser(RegisterRequest rr){
+        LoggedInUser user  = new LoggedInUser();
+        user.setUserName(rr.getUserName());
+        user.setEmail(rr.getEmail());
+        user.setDraws(0);
+        user.setLoses(0);
+        user.setWins(0);
+        user.setStatus(1);
+        return user;
+    }
 }
