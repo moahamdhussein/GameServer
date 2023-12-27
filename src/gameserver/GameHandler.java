@@ -1,8 +1,5 @@
 package gameserver;
 
-
-import request.RegisterRequest;
-
 import com.google.gson.JsonSyntaxException;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -11,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Vector;
+import request.RegisterRequest;
 import request.RequestHandler;
 import response.NetworkResponse;
 import response.RegisterResponse;
@@ -27,7 +25,7 @@ public class GameHandler extends Thread {
             ear = new BufferedReader(new InputStreamReader(new DataInputStream(cs.getInputStream())));
             mouth = new PrintStream(cs.getOutputStream());
             GameHandler.clients.add(this);
-            start();
+            this.start();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -38,17 +36,19 @@ public class GameHandler extends Thread {
         while (true) {
             try {
                 String str = ear.readLine();
-                System.out.println("Recieved From User " + str);
                 if (!str.isEmpty()) {
                     System.out.println("Recieved From User " + str);
+                    str = "";
                     //sendMessageToAll(str);
 //                    handleClientRequest(str);
                 }
             } catch (IOException ex) {
-                System.out.println("input closed");
+                System.out.println("Client Disconnected");
+                clients.remove(this);
                 this.stop();
             }
         }
+
     }
 
     void sendMessageToAll(String msg) {
@@ -59,36 +59,36 @@ public class GameHandler extends Thread {
     }
 
     void handleClientRequest(String rawRequest) {
-       
-          try {
-                String rawResponse="";
-                 RegisterRequest data =(RegisterRequest)RequestHandler.handleRequest(rawRequest);
-                System.out.println(data.getUserName()); 
-                int id = insertIntoDB(data);
-                if (id > 0) {
-                    NetworkResponse response = new NetworkResponse<RegisterResponse>();
-                    response.setStatus(NetworkResponse.ResponseStatus.SUCCESS);
-                    RegisterResponse resgisetResponse=new RegisterResponse();
-                    resgisetResponse.setId(id);
-                    resgisetResponse.setUserName(data.getUserName());
-                    resgisetResponse.setEmail(data.getEmail());
-                    response.setResponseInfo(resgisetResponse);
-                    rawResponse=ResponseHandler.createJsonResponse(response);
-                }else{
-                
-                   NetworkResponse response = new NetworkResponse<RegisterResponse>();
-                    response.setStatus(NetworkResponse.ResponseStatus.FAILURE);
-                    response.setResponseInfo(null);
-                    rawResponse=ResponseHandler.createJsonResponse(response);
-                }
+
+        try {
+            String rawResponse = "";
+            RegisterRequest data = (RegisterRequest) RequestHandler.handleRequest(rawRequest);
+            System.out.println(data.getUserName());
+            int id = insertIntoDB(data);
+            if (id > 0) {
+                NetworkResponse response = new NetworkResponse<RegisterResponse>();
+                response.setStatus(NetworkResponse.ResponseStatus.SUCCESS);
+                RegisterResponse resgisetResponse = new RegisterResponse();
+                resgisetResponse.setId(id);
+                resgisetResponse.setUserName(data.getUserName());
+                resgisetResponse.setEmail(data.getEmail());
+                response.setResponseInfo(resgisetResponse);
+                rawResponse = ResponseHandler.createJsonResponse(response);
+            } else {
+
+                NetworkResponse response = new NetworkResponse<RegisterResponse>();
+                response.setStatus(NetworkResponse.ResponseStatus.FAILURE);
+                response.setResponseInfo(null);
+                rawResponse = ResponseHandler.createJsonResponse(response);
+            }
             mouth.println(rawResponse);
         } catch (JsonSyntaxException ex) {
         }
-    
-}
+
+    }
+
     int insertIntoDB(RegisterRequest data) {
         return 1;
     }
 
-    
 }

@@ -1,16 +1,11 @@
 package DataBase;
 
-import java.sql.PreparedStatement; 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import request.LoginRequest;
 import request.RegisterRequest;
 import response.LoggedInUser;
-import response.NetworkResponse;
 
 public class DataBaseDao implements UserDao {
 
@@ -50,6 +45,7 @@ public class DataBaseDao implements UserDao {
             callback.onFailure(ex);
         }
     }
+
     @Override
     public void updateScore(LoggedInUser user, int isWin, DaoCallback<Integer> callback) {
         int win = 0, lose = 0, draw = 0;
@@ -83,9 +79,9 @@ public class DataBaseDao implements UserDao {
     public void getDataForLogin(LoginRequest lr, DaoCallback<LoggedInUser> callback) {
         try {
             String query = "select * from player where email = ? and password = ?";
-            PreparedStatement pst = db.con.prepareStatement(query,ResultSet.TYPE_SCROLL_SENSITIVE);
+            PreparedStatement pst = db.con.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE);
             pst.setString(1, lr.getEmail());
-            pst.setString(2, lr.getPassword());    
+            pst.setString(2, lr.getPassword());
             callback.onSuccess(convetResultSetToLoggedInUser(pst.executeQuery()));
             pst.close();
         } catch (SQLException ex) {
@@ -93,13 +89,13 @@ public class DataBaseDao implements UserDao {
             callback.onFailure(ex);
         }
     }
-    
+
     @Override
-    public void getAllPlayer(DaoCallback<ResultSet> callback){
-        
+    public void getAllPlayer(DaoCallback<ResultSet> callback) {
+
     }
-    
-    private LoggedInUser convetResultSetToLoggedInUser(ResultSet rs){
+
+    private LoggedInUser convetResultSetToLoggedInUser(ResultSet rs) {
         try {
             LoggedInUser user = new LoggedInUser();
             user.setId(rs.getInt(1));
@@ -114,6 +110,5 @@ public class DataBaseDao implements UserDao {
             return null;
         }
     }
-    
 
 }

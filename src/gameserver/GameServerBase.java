@@ -1,22 +1,14 @@
 package gameserver;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -28,7 +20,6 @@ public class GameServerBase extends AnchorPane {
     protected final NumberAxis numberAxis;
     protected final BarChart charthBar;
     protected final ToggleButton btnStartStop;
-    ServerSocket serversocket;
 
     public GameServerBase() throws IOException {
 

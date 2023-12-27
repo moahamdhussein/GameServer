@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import request.LoginRequest;
 import request.RegisterRequest;
 import response.LoggedInUser;
-import response.NetworkResponse;
 
 public interface UserDao {
     void getUserData(int Id , DaoCallback<ResultSet> callback);
