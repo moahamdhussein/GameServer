@@ -1,5 +1,10 @@
 package gameserver;
 
+import request.NetworkRequest;
+import request.RegisterRequest;
+import request.RequestType;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -7,6 +12,10 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Vector;
+import request.RequestHandler;
+import response.NetworkResponse;
+import response.RegisterResponse;
+import response.ResponseHandler;
 
 public class GameHandler extends Thread {
 
@@ -32,7 +41,8 @@ public class GameHandler extends Thread {
                 String str = ear.readLine();
                 if (!str.isEmpty()) {
                     System.out.println("Recieved From User " + str);
-                    sendMessageToAll(str);
+                    //sendMessageToAll(str);
+                    handleClientRequest(str);
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -46,4 +56,38 @@ public class GameHandler extends Thread {
             s.mouth.println("Sent From server " + msg);
         }
     }
+
+    void handleClientRequest(String rawRequest) {
+       
+          try {
+                String rawResponse="";
+                 RegisterRequest data =(RegisterRequest)RequestHandler.handleRequest(rawRequest);
+                System.out.println(data.getFirstName() ); 
+                int id = insertIntoDB(data);
+                if (id > 0) {
+                    NetworkResponse response = new NetworkResponse<RegisterResponse>();
+                    response.setStatus(NetworkResponse.ResponseStatus.SUCCESS);
+                    RegisterResponse resgisetResponse=new RegisterResponse();
+                    resgisetResponse.setId(id);
+                    resgisetResponse.setFirstName(data.getFirstName());
+                    resgisetResponse.setEmail(data.getEmail());
+                    response.setResponseInfo(resgisetResponse);
+                    rawResponse=ResponseHandler.createJsonResponse(response);
+                }else{
+                
+                   NetworkResponse response = new NetworkResponse<RegisterResponse>();
+                    response.setStatus(NetworkResponse.ResponseStatus.FAILURE);
+                    response.setResponseInfo(null);
+                    rawResponse=ResponseHandler.createJsonResponse(response);
+                }
+            mouth.println(rawResponse);
+        } catch (JsonSyntaxException ex) {
+        }
+    
+}
+    int insertIntoDB(RegisterRequest data) {
+        return 1;
+    }
+
+    
 }
