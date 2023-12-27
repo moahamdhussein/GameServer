@@ -1,9 +1,8 @@
 package gameserver;
 
-import request.NetworkRequest;
+
 import request.RegisterRequest;
-import request.RequestType;
-import com.google.gson.Gson;
+
 import com.google.gson.JsonSyntaxException;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -39,13 +38,15 @@ public class GameHandler extends Thread {
         while (true) {
             try {
                 String str = ear.readLine();
+                System.out.println("Recieved From User " + str);
                 if (!str.isEmpty()) {
                     System.out.println("Recieved From User " + str);
                     //sendMessageToAll(str);
-                    handleClientRequest(str);
+//                    handleClientRequest(str);
                 }
             } catch (IOException ex) {
-                ex.printStackTrace();
+                System.out.println("input closed");
+                this.stop();
             }
         }
     }
@@ -62,14 +63,14 @@ public class GameHandler extends Thread {
           try {
                 String rawResponse="";
                  RegisterRequest data =(RegisterRequest)RequestHandler.handleRequest(rawRequest);
-                System.out.println(data.getFirstName() ); 
+                System.out.println(data.getUserName()); 
                 int id = insertIntoDB(data);
                 if (id > 0) {
                     NetworkResponse response = new NetworkResponse<RegisterResponse>();
                     response.setStatus(NetworkResponse.ResponseStatus.SUCCESS);
                     RegisterResponse resgisetResponse=new RegisterResponse();
                     resgisetResponse.setId(id);
-                    resgisetResponse.setFirstName(data.getFirstName());
+                    resgisetResponse.setUserName(data.getUserName());
                     resgisetResponse.setEmail(data.getEmail());
                     response.setResponseInfo(resgisetResponse);
                     rawResponse=ResponseHandler.createJsonResponse(response);

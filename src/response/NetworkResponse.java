@@ -34,7 +34,9 @@ public class NetworkResponse<T> {
     
     public enum ResponseStatus {
     SUCCESS("success"), 
-    FAILURE("failure");
+    FAILURE("failure"),
+    SERVER_ERROR("server_error");
+    
     @SerializedName("status")
     private final String status;
     ResponseStatus(String status){

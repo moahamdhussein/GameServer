@@ -11,7 +11,7 @@ package response;
  */
 public class RegisterResponse {
     int id;
-    String firstName;
+    String userName;
     String email;
 
     public int getId() {
@@ -22,12 +22,12 @@ public class RegisterResponse {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getEmail() {
