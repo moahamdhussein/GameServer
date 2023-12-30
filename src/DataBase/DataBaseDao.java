@@ -33,7 +33,7 @@ public class DataBaseDao implements UserDao {
     @Override
     public void registerUser(RegisterRequest rr, DaoCallback<LoggedInUser> callback) {
         try {
-            String query = "Insert into player (email,usename,password) Value(?,?,?)";
+            String query = "Insert into player (email,username,password) Values(?,?,?)";
             PreparedStatement pst = db.con.prepareStatement(query);
             pst.setString(1, rr.getEmail());
             pst.setString(2, rr.getUserName());
@@ -81,9 +81,9 @@ public class DataBaseDao implements UserDao {
     public void getDataForLogin(LoginRequest lr, DaoCallback<LoggedInUser> callback) {
         try {
             String query = "select * from player where email = ? and password = ?";
-            PreparedStatement pst = db.con.prepareStatement(query,ResultSet.TYPE_SCROLL_SENSITIVE);
+            PreparedStatement pst = db.con.prepareStatement(query);
             pst.setString(1, lr.getEmail());
-            pst.setString(2, lr.getPassword());    
+            pst.setString(2, lr.getPassword());
             callback.onSuccess(convetResultSetToLoggedInUser(pst.executeQuery()));
             pst.close();
         } catch (SQLException ex) {
@@ -100,6 +100,7 @@ public class DataBaseDao implements UserDao {
     private LoggedInUser convetResultSetToLoggedInUser(ResultSet rs){
         try {
             LoggedInUser user = new LoggedInUser();
+            rs.next();
             user.setId(rs.getInt(1));
             user.setEmail(rs.getString(2));
             user.setUserName(rs.getString(3));

@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import request.RequestHandler;
 import response.NetworkResponse;
 import response.RegisterResponse;
@@ -37,6 +39,7 @@ public class GameHandler extends Thread {
     public void run() {
         while (true) {
             try {
+                
                 String str = ear.readLine();
                 System.out.println("Recieved From User " + str);
                 if (!str.isEmpty()) {
@@ -88,6 +91,15 @@ public class GameHandler extends Thread {
 }
     int insertIntoDB(RegisterRequest data) {
         return 1;
+    }
+    
+    public  void onClose(){
+        try {
+            ear.close();
+            mouth.close();
+        } catch (IOException ex) {
+            Logger.getLogger(GameHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     
