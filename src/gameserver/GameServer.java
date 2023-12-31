@@ -3,6 +3,7 @@ package gameserver;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
 public class GameServer extends Application {
 
     static ServerSocket serversocket;
+    private ArrayList<String> ips = new ArrayList<>();
 
     public GameServer() {
         initializeServerSocket();
@@ -18,8 +20,8 @@ public class GameServer extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root =new GameServerBase();
-        Scene scene = new Scene(root,1343,858);
+        Parent root = new GameServerBase();
+        Scene scene = new Scene(root, 1343, 858);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
@@ -37,7 +39,8 @@ public class GameServer extends Application {
 
                 while (true) {
                     Socket socket = serversocket.accept();
-                    if (socket.isConnected()) {
+                    if (socket.isConnected() && !(ips.contains(socket.getInetAddress().getHostAddress()))) {
+                        ips.add(socket.getInetAddress().getHostAddress());
                         System.out.println("Client #" + (GameHandler.clients.size() + 1) + " has Connected...");
                     }
                     new GameHandler(socket);

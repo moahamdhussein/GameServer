@@ -1,11 +1,11 @@
 package DataBase;
 
+import Network.Request.data.LoginRequest;
+import Network.Request.data.RegisterRequest;
+import Network.Response.data.LogInResponse;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import request.LoginRequest;
-import request.RegisterRequest;
-import response.LoggedInUser;
 
 public class DataBaseDao implements UserDao {
 
@@ -17,11 +17,10 @@ public class DataBaseDao implements UserDao {
     }
 
     @Override
-    public void getUserData(int id, DaoCallback<ResultSet> callback) {
+    public void getUserData(DaoCallback<ResultSet> callback) {
         try {
-            String query = "select * from player where id = ?";
+            String query = "select * from player";
             PreparedStatement pst = db.con.prepareStatement(query);
-            pst.setInt(1, id);
             callback.onSuccess(pst.executeQuery());
             pst.close();
         } catch (SQLException ex) {
@@ -31,14 +30,17 @@ public class DataBaseDao implements UserDao {
     }
 
     @Override
-    public void rgisterUser(RegisterRequest rr, DaoCallback<Integer> callback) {
+    public void registerUser(RegisterRequest rr, DaoCallback<LogInResponse> callback) {
         try {
-            String query = "Insert into player (email,usename,password) Value(?,?,?)";
+            String query = "Insert into player (email,username,password) Values(?,?,?)";
             PreparedStatement pst = db.con.prepareStatement(query);
             pst.setString(1, rr.getEmail());
             pst.setString(2, rr.getUserName());
             pst.setString(3, rr.getPassword());
-            callback.onSuccess(pst.executeUpdate());
+            int executeUpdate = pst.executeUpdate();
+            if (executeUpdate > 0) {
+                callback.onSuccess(convertFromRegisterRequestToLoggedInUser(rr));
+            }
             pst.close();
         } catch (SQLException ex) {
             System.out.println("User already in defined please LogIn");
@@ -47,7 +49,7 @@ public class DataBaseDao implements UserDao {
     }
 
     @Override
-    public void updateScore(LoggedInUser user, int isWin, DaoCallback<Integer> callback) {
+    public void updateScore(LogInResponse user, int isWin, DaoCallback<Integer> callback) {
         int win = 0, lose = 0, draw = 0;
         switch (isWin) {
             case 1:
@@ -76,10 +78,10 @@ public class DataBaseDao implements UserDao {
     }
 
     @Override
-    public void getDataForLogin(LoginRequest lr, DaoCallback<LoggedInUser> callback) {
+    public void getDataForLogin(LoginRequest lr, DaoCallback<LogInResponse> callback) {
         try {
             String query = "select * from player where email = ? and password = ?";
-            PreparedStatement pst = db.con.prepareStatement(query, ResultSet.TYPE_SCROLL_SENSITIVE);
+            PreparedStatement pst = db.con.prepareStatement(query);
             pst.setString(1, lr.getEmail());
             pst.setString(2, lr.getPassword());
             callback.onSuccess(convetResultSetToLoggedInUser(pst.executeQuery()));
@@ -95,9 +97,10 @@ public class DataBaseDao implements UserDao {
 
     }
 
-    private LoggedInUser convetResultSetToLoggedInUser(ResultSet rs) {
+    private LogInResponse convetResultSetToLoggedInUser(ResultSet rs) {
         try {
-            LoggedInUser user = new LoggedInUser();
+            LogInResponse user = new LogInResponse();
+            rs.next();
             user.setId(rs.getInt(1));
             user.setEmail(rs.getString(2));
             user.setUserName(rs.getString(3));
@@ -109,6 +112,17 @@ public class DataBaseDao implements UserDao {
         } catch (SQLException ex) {
             return null;
         }
+    }
+
+    private LogInResponse convertFromRegisterRequestToLoggedInUser(RegisterRequest rr) {
+        LogInResponse user = new LogInResponse(rr.getIp());
+        user.setUserName(rr.getUserName());
+        user.setEmail(rr.getEmail());
+        user.setDraws(0);
+        user.setLoses(0);
+        user.setWins(0);
+        user.setStatus(1);
+        return user;
     }
 
 }

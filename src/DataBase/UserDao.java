@@ -1,14 +1,19 @@
 package DataBase;
 
+import Network.Response.data.LogInResponse;
+import Network.Request.data.LoginRequest;
+import Network.Request.data.RegisterRequest;
 import java.sql.ResultSet;
-import request.LoginRequest;
-import request.RegisterRequest;
-import response.LoggedInUser;
 
 public interface UserDao {
-    void getUserData(int Id , DaoCallback<ResultSet> callback);
-    void getDataForLogin(LoginRequest lr, DaoCallback<LoggedInUser> callback);
-    void rgisterUser(RegisterRequest rr,DaoCallback<Integer> callback);
-    void updateScore(LoggedInUser user, int isWin , DaoCallback<Integer> callback);
+
+    void getUserData(DaoCallback<ResultSet> callback);
+
+    void getDataForLogin(LoginRequest lr, DaoCallback<LogInResponse> callback);
+
+    void registerUser(RegisterRequest rr, DaoCallback<LogInResponse> callback);
+
+    void updateScore(LogInResponse user, int isWin, DaoCallback<Integer> callback);
+
     void getAllPlayer(DaoCallback<ResultSet> callback);
 }

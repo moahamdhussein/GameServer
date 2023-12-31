@@ -15,7 +15,7 @@ public final class UserDB {
     private UserDB() {
         try {
             DriverManager.registerDriver(new ClientDriver());
-        
+
         } catch (SQLException ex) {
             Logger.getLogger(UserDB.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -30,7 +30,7 @@ public final class UserDB {
 
     final void connect() {
         try {
-            con = DriverManager.getConnection("jdbc:derby://localhost:1527/MyDb", "root", "root");
+            con = DriverManager.getConnection("jdbc:derby://localhost:1527/myDb", "root", "root");
         } catch (SQLException ex) {
             System.out.println("can't connect to server database");
         }
