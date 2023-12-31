@@ -1,12 +1,11 @@
 package DataBase;
 
-import java.sql.PreparedStatement; 
+import Network.Request.data.LoginRequest;
+import Network.Request.data.RegisterRequest;
+import Network.Response.data.LogInResponse;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import request.LoginRequest;
-import request.RegisterRequest;
-import response.LoggedInUser;
-
 
 public class DataBaseDao implements UserDao {
 
@@ -31,7 +30,7 @@ public class DataBaseDao implements UserDao {
     }
 
     @Override
-    public void registerUser(RegisterRequest rr, DaoCallback<LoggedInUser> callback) {
+    public void registerUser(RegisterRequest rr, DaoCallback<LogInResponse> callback) {
         try {
             String query = "Insert into player (email,username,password) Values(?,?,?)";
             PreparedStatement pst = db.con.prepareStatement(query);
@@ -39,8 +38,8 @@ public class DataBaseDao implements UserDao {
             pst.setString(2, rr.getUserName());
             pst.setString(3, rr.getPassword());
             int executeUpdate = pst.executeUpdate();
-            if(executeUpdate > 0){
-              callback.onSuccess(convertFromRegisterRequestToLoggedInUser(rr));
+            if (executeUpdate > 0) {
+                callback.onSuccess(convertFromRegisterRequestToLoggedInUser(rr));
             }
             pst.close();
         } catch (SQLException ex) {
@@ -48,8 +47,9 @@ public class DataBaseDao implements UserDao {
             callback.onFailure(ex);
         }
     }
+
     @Override
-    public void updateScore(LoggedInUser user, int isWin, DaoCallback<Integer> callback) {
+    public void updateScore(LogInResponse user, int isWin, DaoCallback<Integer> callback) {
         int win = 0, lose = 0, draw = 0;
         switch (isWin) {
             case 1:
@@ -78,7 +78,7 @@ public class DataBaseDao implements UserDao {
     }
 
     @Override
-    public void getDataForLogin(LoginRequest lr, DaoCallback<LoggedInUser> callback) {
+    public void getDataForLogin(LoginRequest lr, DaoCallback<LogInResponse> callback) {
         try {
             String query = "select * from player where email = ? and password = ?";
             PreparedStatement pst = db.con.prepareStatement(query);
@@ -91,15 +91,15 @@ public class DataBaseDao implements UserDao {
             callback.onFailure(ex);
         }
     }
-    
+
     @Override
-    public void getAllPlayer(DaoCallback<ResultSet> callback){
-        
+    public void getAllPlayer(DaoCallback<ResultSet> callback) {
+
     }
-    
-    private LoggedInUser convetResultSetToLoggedInUser(ResultSet rs){
+
+    private LogInResponse convetResultSetToLoggedInUser(ResultSet rs) {
         try {
-            LoggedInUser user = new LoggedInUser();
+            LogInResponse user = new LogInResponse();
             rs.next();
             user.setId(rs.getInt(1));
             user.setEmail(rs.getString(2));
@@ -113,9 +113,9 @@ public class DataBaseDao implements UserDao {
             return null;
         }
     }
-    
-    private LoggedInUser convertFromRegisterRequestToLoggedInUser(RegisterRequest rr){
-        LoggedInUser user  = new LoggedInUser();
+
+    private LogInResponse convertFromRegisterRequestToLoggedInUser(RegisterRequest rr) {
+        LogInResponse user = new LogInResponse(rr.getIp());
         user.setUserName(rr.getUserName());
         user.setEmail(rr.getEmail());
         user.setDraws(0);
