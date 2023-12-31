@@ -22,12 +22,15 @@ public class GameHandler extends Thread {
 
     BufferedReader ear;
     PrintStream mouth;
+    boolean exit = false;
     static Vector<GameHandler> clients = new Vector<GameHandler>();
 
     public GameHandler(Socket cs) {
         try {
             ear = new BufferedReader(new InputStreamReader(new DataInputStream(cs.getInputStream())));
             mouth = new PrintStream(cs.getOutputStream());
+            System.out.println("ip for user"+cs.getInetAddress().getHostAddress());
+            System.out.println("ip for user"+cs.getInetAddress().getHostName());
             GameHandler.clients.add(this);
             start();
         } catch (IOException ex) {
@@ -37,19 +40,19 @@ public class GameHandler extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (!exit) {
             try {
                 
                 String str = ear.readLine();
                 System.out.println("Recieved From User " + str);
                 if (!str.isEmpty()) {
                     System.out.println("Recieved From User " + str);
-                    //sendMessageToAll(str);
+//                    sendMessageToAll(str);
 //                    handleClientRequest(str);
                 }
             } catch (IOException ex) {
                 System.out.println("input closed");
-                this.stop();
+                exit = true;
             }
         }
     }
@@ -57,6 +60,7 @@ public class GameHandler extends Thread {
     void sendMessageToAll(String msg) {
 
         for (GameHandler s : clients) {
+            
             s.mouth.println("Sent From server " + msg);
         }
     }
@@ -95,10 +99,11 @@ public class GameHandler extends Thread {
     
     public  void onClose(){
         try {
+            
             ear.close();
             mouth.close();
         } catch (IOException ex) {
-            Logger.getLogger(GameHandler.class.getName()).log(Level.SEVERE, null, ex);
+           ex.printStackTrace();
         }
     }
 

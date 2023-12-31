@@ -6,16 +6,13 @@
 package response;
 
 import com.google.gson.annotations.SerializedName;
+import request.RequestType;
 
-/**
- *
- * @author esraa
- * @param <T>
- */
 public class NetworkResponse<T> {
     ResponseStatus status;
     @SerializedName("response")
     T responseInfo;
+    ResponseType responseType;
 
     public T getResponseInfo() {
         return responseInfo;

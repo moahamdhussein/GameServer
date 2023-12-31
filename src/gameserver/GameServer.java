@@ -16,9 +16,6 @@ import response.LoggedInUser;
 public class GameServer extends Application {
 
     static ServerSocket serversocket;
-    Socket socket;
-    GameHandler gameHandler;
-    Thread thread;
 
     public GameServer() {
         initializeServerSocket();
@@ -37,7 +34,7 @@ public class GameServer extends Application {
         lr.setEmail("sasasasa@sda");
         lr.setUserName("mohaned");
         lr.setDraws(0);
-        d.updateScore(lr, 1, new DaoCallback<Integer>() {
+        d.updateScore(lr, 0, new DaoCallback<Integer>() {
             @Override
             public void onSuccess(Integer results) {
                 System.out.println(results);
@@ -45,7 +42,7 @@ public class GameServer extends Application {
 
             @Override
             public void onFailure(Throwable throwable) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet."); 
             }
         });
         stage.show();
@@ -61,28 +58,31 @@ public class GameServer extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-       
-
+        serversocket.close();
     }
 
     private void initializeServerSocket() {
-        thread = new Thread(() -> {
+        new Thread(() -> {
             try {
-                serversocket = new ServerSocket(5050);
+                serversocket = new ServerSocket(5000);
 
-                while (true) {
-                    socket = serversocket.accept();
+                while (!serversocket.isClosed()) {
+                    System.out.println("running");
+                    Socket socket = serversocket.accept();
                     if (socket.isConnected()) {
                         System.out.println("Client #" + (GameHandler.clients.size() + 1) + " has Connected...");
                     }
-                    gameHandler = new GameHandler(socket);
+                    new GameHandler(socket);
+
                 }
             } catch (IOException ex) {
-                ex.printStackTrace();
+                if (!serversocket.isClosed()) {
+                    ex.printStackTrace();
+                }
             }
 
-        });
-        thread.start();
+        }).start();
+        
 
     }
 
