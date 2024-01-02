@@ -34,28 +34,46 @@ public class NetworkResponse {
 
     public enum ResponseStatus {
         SUCCESS("success"),
-        FAILURE("failure");
+        FAILURE("failure"),
+        NOTFOUND("notfound");
+
         @SerializedName("status")
         private final String status;
 
         ResponseStatus(String status) {
             this.status = status;
         }
+
+        public static ResponseStatus fromString(String modeString) {
+            for (ResponseStatus rStatus : ResponseStatus.values()) {
+                if (rStatus.status.equalsIgnoreCase(modeString)) {
+                    return rStatus;
+                }
+            }
+            return SUCCESS;
+        }
     }
 
     public enum ResponseMode {
-        LOGIN("ssss"),
+        LOGIN("LOGIN"),
         REGISTER("REGISTER"),
-        AVAILABLE_PLAYERS("AVAILABLE_PLAYERS");
-        @SerializedName("MODE")
+        AVAILABLE_PLAYERS("AVAILABLE_PLAYERS"),
+        NONE("NONE");
+
         private final String mode;
 
         ResponseMode(String mode) {
             this.mode = mode;
         }
 
-        public String getMode() {
-            return this.mode;
+        public static ResponseMode fromString(String modeString) {
+            for (ResponseMode mode : ResponseMode.values()) {
+                if (mode.equals(modeString.replace("\"", ""))) {
+                    System.out.println("Type  = " + mode + "\nvalue = " + modeString);
+                    return mode;
+                }
+            }
+            return NONE;
         }
     }
 
@@ -63,7 +81,7 @@ public class NetworkResponse {
     public String toString() {
         return "NetworkResponse{"
                 + "ip='" + ip + '\''
-                + ", mode=" + mode
+                + ", mode = " + mode
                 + ", responseStatus=" + responseStatus
                 + '}';
     }
