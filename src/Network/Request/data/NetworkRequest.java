@@ -4,18 +4,12 @@ public class NetworkRequest<T> {
 
     String ip;
     RequestType requestType;
-    T requestData;
 
     public NetworkRequest() {
     }
 
-    public T getRequestData() {
-        return requestData;
-    }
-
     public NetworkRequest(RequestType requestType, T requestData) {
         this.requestType = requestType;
-        this.requestData = requestData;
     }
 
     public void setIp(String ip) {
@@ -34,15 +28,28 @@ public class NetworkRequest<T> {
         this.requestType = requestType;
     }
 
-    public void setRequestData(T requestData) {
-        this.requestData = requestData;
-    }
-
     public enum RequestType {
-        LOGIN,
-        LOGOUT,
-        REGISTER,
-        AVAILABLE_PLAYERS;
+        LOGIN("LOGIN"),
+        REGISTER("REGISTER"),
+        AVAILABLE_PLAYERS("AVAILABLE_PLAYERS"),
+        NONE("NONE");
+
+        String type = "";
+
+        private RequestType(String s) {
+            this.type = s;
+        }
+
+        public static RequestType fromString(String typeString) {
+            for (RequestType type : RequestType.values()) {
+                System.err.println("After removing \"  :" + typeString.replace("\"", ""));
+                if (type.type.equals(typeString.replace("\"", ""))) {
+                    System.out.println("Type  = " + type + "\nvalue = " + typeString);
+                    return type;
+                }
+            }
+            return NONE;
+        }
     }
 
     @Override
@@ -50,7 +57,6 @@ public class NetworkRequest<T> {
         return "NetworkRequest{"
                 + "ip='" + ip + '\''
                 + ", requestType=" + requestType
-                + ", requestData=" + requestData
                 + '}';
     }
 }

@@ -6,17 +6,19 @@ import Network.Response.data.LogInResponse;
 import java.sql.ResultSet;
 
 public interface UserDao {
-  void getUserData(DaoCallback<ResultSet> callback);
 
-  void getDataForLogin(LoginRequest lr, DaoCallback<LogInResponse> callback);
+    void getUserData(DaoCallback<ResultSet> callback);
 
-  void registerUser(RegisterRequest rr, DaoCallback<LogInResponse> callback);
 
-  void updateScore(
-    LogInResponse user,
-    int isWin,
-    DaoCallback<Integer> callback
-  );
+    void getDataForLogin(LoginRequest lr, DaoCallback<String[]> callback);
 
-  void getAllPlayer(DaoCallback<ResultSet> callback);
+    void registerUser(RegisterRequest rr, DaoCallback<LogInResponse> callback);
+
+    void updateScore(
+            LogInResponse user,
+            int isWin,
+            DaoCallback<Integer> callback
+    );
+
+    void getAllPlayer(DaoCallback<ResultSet> callback);
 }

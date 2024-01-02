@@ -3,7 +3,6 @@ package gameserver;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,10 +14,28 @@ public class GameServer extends Application {
     Socket socket;
     GameHandler gameHandler;
     Thread thread;
-    private ArrayList<String> ips = new ArrayList<>();
+    String[] randomValues = {
+        "42", // id
+        "JohnDoe", // userName
+        "john.doe@example.com",// email
+        "25", // wins
+        "10", // loses
+        "5", // draws
+        "1", // status
+        "", "", "", "", "",
+        "192.168.1.100", // ip
+        "success", // responseStatus
+        "REGISTER" // mode
+    };
 
     public GameServer() {
         initializeServerSocket();
+
+//        LoginRequest lr = new LoginRequest("ali", "xxxxx");
+//        String json = new Gson().toJson(lr.toArray());
+//        System.out.println("Json : " + json);
+//        System.out.println("Obj : " + new LogInResponse(randomValues));
+//        System.out.println("Obj after Json : " + new LoginRequest(json));
     }
     Parent root;
 
@@ -29,7 +46,6 @@ public class GameServer extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-
     }
 
     public static void main(String[] args) throws IOException {
@@ -47,12 +63,11 @@ public class GameServer extends Application {
     private void initializeServerSocket() {
         thread = new Thread(() -> {
             try {
-                serversocket = new ServerSocket(5050);
+                serversocket = new ServerSocket(5000);
 
                 while (true) {
                     Socket socket = serversocket.accept();
-                    if (socket.isConnected() && !(ips.contains(socket.getInetAddress().getHostAddress()))) {
-                        ips.add(socket.getInetAddress().getHostAddress());
+                    if (socket.isConnected()) {
                         System.out.println("Client #" + (GameHandler.clients.size() + 1) + " has Connected...");
                     }
                     gameHandler = new GameHandler(socket);

@@ -6,6 +6,8 @@ import Network.Response.data.LogInResponse;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DataBaseDao implements UserDao {
 
@@ -34,9 +36,9 @@ public class DataBaseDao implements UserDao {
         try {
             String query = "Insert into player (email,username,password) Values(?,?,?)";
             PreparedStatement pst = db.con.prepareStatement(query);
-            pst.setString(1, rr.getEmail());
-            pst.setString(2, rr.getUserName());
-            pst.setString(3, rr.getPassword());
+            pst.setString(1, rr.getEmail().replace("\"", ""));
+            pst.setString(2, rr.getUserName().replace("\"", ""));
+            pst.setString(3, rr.getPassword().replace("\"", ""));
             int executeUpdate = pst.executeUpdate();
             if (executeUpdate > 0) {
                 callback.onSuccess(convertFromRegisterRequestToLoggedInUser(rr));
@@ -78,12 +80,12 @@ public class DataBaseDao implements UserDao {
     }
 
     @Override
-    public void getDataForLogin(LoginRequest lr, DaoCallback<LogInResponse> callback) {
+    public void getDataForLogin(LoginRequest lr, DaoCallback<String[]> callback) {
         try {
             String query = "select * from player where email = ? and password = ?";
             PreparedStatement pst = db.con.prepareStatement(query);
-            pst.setString(1, lr.getEmail());
-            pst.setString(2, lr.getPassword());
+            pst.setString(1, lr.getEmail().replace("\"", ""));
+            pst.setString(2, lr.getPassword().replace("\"", ""));
             callback.onSuccess(convetResultSetToLoggedInUser(pst.executeQuery()));
             pst.close();
         } catch (SQLException ex) {
@@ -97,21 +99,34 @@ public class DataBaseDao implements UserDao {
 
     }
 
-    private LogInResponse convetResultSetToLoggedInUser(ResultSet rs) {
+    private String[] convetResultSetToLoggedInUser(ResultSet rs) {
         try {
-            LogInResponse user = new LogInResponse();
-            rs.next();
-            user.setId(rs.getInt(1));
-            user.setEmail(rs.getString(2));
-            user.setUserName(rs.getString(3));
-            user.setWins(rs.getInt(5));
-            user.setLoses(rs.getInt(6));
-            user.setDraws(rs.getInt(7));
-            user.setStatus(rs.getInt(8));
-            return user;
+            int columnCount = rs.getMetaData().getColumnCount();
+
+            // Print column names
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.print(rs.getMetaData().getColumnName(i) + "\t");
+            }
+            try {
+                LogInResponse user = new LogInResponse();
+                rs.next();
+                user.setId(rs.getInt(1));
+                user.setEmail(rs.getString(2));
+                user.setUserName(rs.getString(3));
+                user.setWins(rs.getInt(5));
+                user.setLoses(rs.getInt(6));
+                user.setDraws(rs.getInt(7));
+                user.setStatus(rs.getInt(8));
+                System.err.println(user);
+                return user.toArray();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                return null;
+            }
         } catch (SQLException ex) {
-            return null;
+            Logger.getLogger(DataBaseDao.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return new LogInResponse().toArray();
     }
 
     private LogInResponse convertFromRegisterRequestToLoggedInUser(RegisterRequest rr) {
